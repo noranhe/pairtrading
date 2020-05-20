@@ -3,6 +3,7 @@ from vnpy.app.portfolio_strategy import StrategyTemplate, StrategyEngine
 from vnpy.trader.utility import BarGenerator, ArrayManager
 from vnpy.trader.object import TickData, BarData
 from vnpy.trader.constant import Interval
+from datetime import datetime 
 import numpy as np
 import pandas as pd
 import patsy
