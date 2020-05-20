@@ -38,6 +38,7 @@ class PairTradingStrategy(StrategyTemplate):
     x_pos = 0
     y_target = 0
     x_target = 0
+    coint = 0
 
 
     parameters = [
@@ -57,7 +58,8 @@ class PairTradingStrategy(StrategyTemplate):
         "y_pos",
         "x_pos",
         "y_target",
-        "x_target"
+        "x_target",
+        "coint"
     ]
 
     def __init__(
@@ -177,6 +179,9 @@ class PairTradingStrategy(StrategyTemplate):
         result=mod.fit()
 
         self.spread_array = result.resid
+
+        self.coint=adfuller(self.spread_array)[1]
+
         self.spread_value = self.spread_array[-1]
 
         self.spread_mean = self.spread_array.mean()
@@ -195,21 +200,23 @@ class PairTradingStrategy(StrategyTemplate):
         self.x_pos = self.get_pos(self.x_symbol)
 
         # 计算目标仓位
-        if self.y_pos ==0:
-            if self.spread_value > self.boll_up:
-                self.y_target = 8*self.fixed_size
-                self.x_target = -10*self.fixed_size
-            elif self.spread_value < self.boll_down:
-                self.y_target = -8*self.fixed_size
-                self.x_target = 10*self.fixed_size
-        elif self.y_pos > 0:
-            if self.spread_value <= self.boll_mean:
-                self.y_target = 0
-                self.x_target = 0         
-        else:
-            if self.spread_value >= self.boll_mean:
-                self.y_target = 0
-                self.x_target = 0
+        if self.coint <= 0.1:
+
+            if self.y_pos ==0:
+                if self.spread_value > self.boll_up:
+                    self.y_target = 8*self.fixed_size
+                    self.x_target = -10*self.fixed_size
+                elif self.spread_value < self.boll_down:
+                    self.y_target = -8*self.fixed_size
+                    self.x_target = 10*self.fixed_size
+            elif self.y_pos > 0:
+                if self.spread_value <= self.boll_mean:
+                    self.y_target = 0
+                    self.x_target = 0         
+            else:
+                if self.spread_value >= self.boll_mean:
+                    self.y_target = 0
+                    self.x_target = 0
 
         target = {
             self.y_symbol: self.y_target,
